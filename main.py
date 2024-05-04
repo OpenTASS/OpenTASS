@@ -3,6 +3,8 @@ import logging
 import requests
 from datetime import datetime
 from dotenv import load_dotenv
+from tabulate import tabulate
+import pandas as pd
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -44,7 +46,7 @@ def main():
         # Now, you can access the protected URL
 
         # Send request to the protected URL
-        if os.getenv("REQUESTED_DATE") is None or os.getenv("REQUESTED_DATE") is "":
+        if os.getenv("REQUESTED_DATE") is None or os.getenv("REQUESTED_DATE") == "":
 
             today = datetime.now()
 
@@ -80,6 +82,35 @@ def main():
             debug_file.write(str(site_data))
             debug_file.close()
             print(site_data["HEADERLABEL"])
+
+            df = pd.DataFrame(site_data["DATA"])
+            df = df.T.drop('sub_code')
+            df = df.drop('room_code')
+            df = df.drop('allDay')
+            df = df.drop('currentperiod')
+            df = df.drop('tch_code')
+            df = df.drop('prd_code')
+            df = df.drop('day_code')
+            df = df.drop('start')
+            df = df.drop('end')
+            df = df.drop('id')
+            df = df.drop('display_tch_name')
+            df = df.drop('diplay_tch_code')
+            df = df.drop('year_grp_desc')
+            df = df.drop('tt_id')
+            df = df.drop('title')
+            df = df.drop('description')
+
+            df = df.reindex(index=["prd_desc", "start_time", "end_time", "sub_desc", "class", "year_grp", "tch_name", "room_desc"])
+
+            df = df.T.rename(columns={"prd_desc": "Period", "start_time": "Start", "end_time": "End", "sub_desc": "Subject", "class": "Class", "year_grp": "Year Group", "tch_name": "Teacher", "room_desc": "Room"})
+
+            df = df.fillna('')
+
+            print(tabulate(df, headers="keys"))
+
+            df.to_html('output.html', index=False)
+
         else:
             logging.fatal(
                 "Failed to access timetable. Make sure your URL is correct in the .env config file."
