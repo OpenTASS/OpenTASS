@@ -44,7 +44,7 @@ def main():
         # Now, you can access the protected URL
 
         # Send request to the protected URL
-        if os.getenv("REQUESTED_DATE") is None or os.getenv("REQUESTED_DATE" is ""):
+        if os.getenv("REQUESTED_DATE") is None or os.getenv("REQUESTED_DATE") is "":
 
             today = datetime.now()
 
