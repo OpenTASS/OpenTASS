@@ -1,6 +1,8 @@
 import os
 import logging
 import requests
+import json
+from datetime import datetime
 from dotenv import load_dotenv
 
 logging.basicConfig(
@@ -9,15 +11,29 @@ logging.basicConfig(
     format='%(asctime)s [%(levelname)s]: %(message)s'
 )
 
+def is_weekend(year, month, day):
+
+    # Create a datetime object for the given date
+    given_date = datetime(year, month, day)
+
+    # Use isoweekday() to get the weekday (Monday is 1 and Sunday is 7)
+    day_of_week = given_date.isoweekday() % 7  # Convert Sunday from 7 to 0
+
+    # Determine if it's a weekday or a weekend
+    if day_of_week < 5:
+        return False
+    else:
+        return True
 
 def main():
     load_dotenv()
 
     tassweb_url = os.getenv("TASSWEB_REMOTE_URL")
-    logging.info(f"Using {tassweb_url} as the URL.")
+    logging.info(f"Using {tassweb_url} as the remote root.")
 
     tassweb_username = os.getenv("TASSWEB_USERNAME")
     tassweb_password = os.getenv("TASSWEB_PASSWORD")
+
     payload = {
         'intent': 'save',
         'required': 'username,password',
@@ -26,27 +42,55 @@ def main():
         'username_previous': '',
         'password': tassweb_password
     }
+
+    params = {
+        'do': 'ui.web.user.loginAttempt'
+    }
+
     logging.info(f"""Authenticating using username {tassweb_username} and provided password.""")
-    response = requests.post(tassweb_url, data=payload)
+    response = requests.post(tassweb_url + "/remote-json.cfm", data=payload, params=params)
 
     # Check if login was successful
     if response.ok:
         logging.info("Successfully authenticated. Now getting timetable data...")
         # Now, you can access the protected URL
-        protected_url = os.getenv("TASSWEB_HOME_URL")
 
         # Send request to the protected URL
-        protected_response = requests.get(protected_url,
-                                          cookies=response.cookies)
+
+
+        if os.getenv("REQUESTED_DATE") == None:
+
+            today = datetime.now()
+
+            if is_weekend(today.year, today.month, today.day):
+                logging.info("It is a weekend. Either run the program on a non-weekend,")
+                logging.info("or specify REQUESTED_DATE in the environment.")
+                logging.info("Exiting.")
+                exit(1)
+
+            payload = {}
+
+        else:
+
+            payload = {
+                'start': os.getenv("REQUESTED_DATE"),
+            }
+
+        params = {
+            'do': 'studentportal.timetable.main.todaysTimetable.grid'
+        }
+
+        protected_response = requests.post(
+            tassweb_url + "/remote-json.cfm",
+            data=payload,
+            params=params,
+            cookies=response.cookies)
 
         if protected_response.ok:
             logging.info("Successfully accessed timetable. Extracting info...")
-            site_html = protected_response.text
+            site_json = protected_response.json()
+            print(site_json)
 
-            # debug log to timetable file (comment out in prod)
-            f = open("timetablepage.html", "w")
-            f.write(site_html)
-            f.close
         else:
             logging.fatal("""Failed to access timetable. Make sure your URL is correct in the .env config file.""")
     else:
