@@ -3,12 +3,14 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
-# Ignore env files (not the default) and temporary logs that are used in development.
+# Ignore env files (not the default) 
 .env
-timetablepage.html
 
 # Ignore Kate temporary swap file.
 *.kate-swp
+
+# Ignore debug files used in development.
+debug*
 
 # User-specific files
 *.rsuser
