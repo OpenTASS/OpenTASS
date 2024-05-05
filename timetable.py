@@ -9,6 +9,9 @@ import pandas as pd
 from login import login
 
 
+def main():
+    pass
+
 def get_day_timetable(auth_cookies=login(), date=None):    # Date is in YYYY-MM-DD format.
     load_dotenv()
 
@@ -129,6 +132,6 @@ def is_weekend(year, month, day):
     else:
         return True
 
+
 if __name__ == "__main__":
-    results = get_day_timetable(login(), "2024-05-06")
-    logging.info(results[1])
+    pass

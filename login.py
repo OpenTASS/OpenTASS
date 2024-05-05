@@ -10,6 +10,9 @@ logging.basicConfig(
 )
 
 
+def main():
+    pass
+
 def login():
     load_dotenv()
 
@@ -51,4 +54,4 @@ def login():
 
 
 if __name__ == "__main__":
-    logging.info(f"The authentication cookie from the server was: {login()}")
+    pass
