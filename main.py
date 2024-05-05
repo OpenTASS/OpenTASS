@@ -84,22 +84,22 @@ def main():
             print(site_data["HEADERLABEL"])
 
             df = pd.DataFrame(site_data["DATA"])
-            df = df.T.drop("sub_code")
-            df = df.drop("room_code")
-            df = df.drop("allDay")
-            df = df.drop("currentperiod")
-            df = df.drop("tch_code")
-            df = df.drop("prd_code")
-            df = df.drop("day_code")
-            df = df.drop("start")
-            df = df.drop("end")
-            df = df.drop("id")
-            df = df.drop("display_tch_name")
-            df = df.drop("diplay_tch_code")  # typo intentional, made on their backend
-            df = df.drop("year_grp_desc")
-            df = df.drop("tt_id")
-            df = df.drop("title")
-            df = df.drop("description")
+            df = df.T.drop("sub_code", errors='ignore')
+            df = df.drop("room_code", errors='ignore')
+            df = df.drop("allDay", errors='ignore')
+            df = df.drop("currentperiod", errors='ignore')
+            df = df.drop("tch_code", errors='ignore')
+            df = df.drop("prd_code", errors='ignore')
+            df = df.drop("day_code", errors='ignore')
+            df = df.drop("start", errors='ignore')
+            df = df.drop("end", errors='ignore')
+            df = df.drop("id", errors='ignore')
+            df = df.drop("display_tch_name", errors='ignore')
+            df = df.drop("diplay_tch_code", errors='ignore')  # typo intentional, made on their backend
+            df = df.drop("year_grp_desc", errors='ignore')
+            df = df.drop("tt_id", errors='ignore')
+            df = df.drop("title", errors='ignore')
+            df = df.drop("description", errors='ignore')
 
             df = df.reindex(
                 index=[
@@ -111,7 +111,8 @@ def main():
                     "year_grp",
                     "tch_name",
                     "room_desc",
-                ]
+                ],
+                errors='ignore'
             )
 
             df = df.T.rename(
@@ -124,7 +125,8 @@ def main():
                     "year_grp": "Year Group",
                     "tch_name": "Teacher",
                     "room_desc": "Room",
-                }
+                },
+                errors='report'
             )
 
             df["Year Group"] = df["Year Group"].fillna(-1)
