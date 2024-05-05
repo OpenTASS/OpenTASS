@@ -154,13 +154,11 @@ def main():
 
 def is_weekend(year, month, day):
 
-    # Create a datetime object for the given date
+    # Create datetime object for the input date
     given_date = datetime(year, month, day)
+    day_of_week = given_date.isoweekday()
 
-    # Use isoweekday() to get the weekday (Monday is 1 and Sunday is 7)
-    day_of_week = given_date.isoweekday() % 7  # Convert Sunday from 7 to 0
-
-    # Determine if it's a weekday or a weekend
+    # Return if it is a weekday or a weekend
     if day_of_week < 5:
         return False
     else:
