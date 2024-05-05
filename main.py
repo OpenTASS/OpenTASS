@@ -101,33 +101,37 @@ def main():
             df = df.drop("title", errors='ignore')
             df = df.drop("description", errors='ignore')
 
-            df = df.reindex(
-                index=[
-                    "prd_desc",
-                    "start_time",
-                    "end_time",
-                    "sub_desc",
-                    "class",
-                    "year_grp",
-                    "tch_name",
-                    "room_desc",
-                ],
-                errors='ignore'
-            )
+            try:
+                df = df.reindex(
+                    index=[
+                        "prd_desc",
+                        "start_time",
+                        "end_time",
+                        "sub_desc",
+                        "class",
+                        "year_grp",
+                        "tch_name",
+                        "room_desc",
+                    ]
+                )
+            except IndexError:
+                pass
 
-            df = df.T.rename(
-                columns={
-                    "prd_desc": "Period",
-                    "start_time": "Start",
-                    "end_time": "End",
-                    "sub_desc": "Subject",
-                    "class": "Class",
-                    "year_grp": "Year Group",
-                    "tch_name": "Teacher",
-                    "room_desc": "Room",
-                },
-                errors='report'
-            )
+            try:
+                df = df.T.rename(
+                    columns={
+                        "prd_desc": "Period",
+                        "start_time": "Start",
+                        "end_time": "End",
+                        "sub_desc": "Subject",
+                        "class": "Class",
+                        "year_grp": "Year Group",
+                        "tch_name": "Teacher",
+                        "room_desc": "Room",
+                    }
+                )
+            except IndexError:
+                pass
 
             df["Year Group"] = df["Year Group"].fillna(-1)
             df = df.fillna("")
