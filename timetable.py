@@ -9,13 +9,11 @@ import pandas as pd
 from login import login
 
 
-def get_day_timetable(date=None):    # Date is in YYYY-MM-DD format.
+def get_day_timetable(auth_cookies=login(), date=None):    # Date is in YYYY-MM-DD format.
     load_dotenv()
 
     tassweb_url = os.getenv("TASSWEB_REMOTE_URL")
     logging.info(f"Using {tassweb_url} as the remote root.")
-
-    auth_cookies = login()
 
     # Send request to the protected URL
     if date is None:
@@ -110,14 +108,13 @@ def get_day_timetable(date=None):    # Date is in YYYY-MM-DD format.
         df["Year Group"] = df["Year Group"].astype(int)
         df["Year Group"] = df["Year Group"].replace(-1, "")
 
-        print(tabulate(df, headers="keys"))
-
-        df.to_html("output.html", index=False)
+        return df.to_html(index=False), tabulate(df, headers="keys")
 
     else:
         logging.fatal(
             "Failed to access timetable. Make sure your URL is correct in the .env config file."
         )
+        exit(1)
 
 
 def is_weekend(year, month, day):
@@ -131,3 +128,7 @@ def is_weekend(year, month, day):
         return False
     else:
         return True
+
+if __name__ == "__main__":
+    results = get_day_timetable(login(), "2024-05-06")
+    logging.info(results[1])
