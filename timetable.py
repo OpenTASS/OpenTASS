@@ -6,13 +6,13 @@ from dotenv import load_dotenv
 from tabulate import tabulate
 import pandas as pd
 
-from login import login
+import login
 
 
 def main():
     pass
 
-def get_day_timetable(auth_cookies=login(), date=None):    # Date is in YYYY-MM-DD format.
+def get_day_timetable(auth_cookies, date=None):    # Date is in YYYY-MM-DD format.
     load_dotenv()
 
     tassweb_url = os.getenv("TASSWEB_REMOTE_URL")
@@ -54,7 +54,7 @@ def get_day_timetable(auth_cookies=login(), date=None):    # Date is in YYYY-MM-
         debug_file = open("debug_data.py", "w")
         debug_file.write(str(site_data))
         debug_file.close()
-        print(site_data["HEADERLABEL"])
+        # print(site_data["HEADERLABEL"])
 
         df = pd.DataFrame(site_data["DATA"])
         df = df.T.drop("sub_code", errors='ignore')
@@ -134,4 +134,5 @@ def is_weekend(year, month, day):
 
 
 if __name__ == "__main__":
-    pass
+    results = get_day_timetable(login.get_auth_cookie())
+    print(results[1])

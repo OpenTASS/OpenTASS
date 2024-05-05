@@ -13,7 +13,7 @@ logging.basicConfig(
 def main():
     pass
 
-def login():
+def get_auth_cookie():
     load_dotenv()
 
     tassweb_url = os.getenv("TASSWEB_REMOTE_URL")
@@ -54,4 +54,4 @@ def login():
 
 
 if __name__ == "__main__":
-    pass
+    logging.info(f"The authentication cookie from the server was: {get_auth_cookie()}")
