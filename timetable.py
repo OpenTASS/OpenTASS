@@ -8,6 +8,12 @@ import pandas as pd
 import login
 
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    datefmt="%d/%m/%y %H:%M:%S",
+    format="%(asctime)s (%(filename)s) [%(levelname)s]: %(message)s"
+)
+
 def main():
     pass
 
