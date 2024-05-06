@@ -11,14 +11,17 @@ import login
 logging.basicConfig(
     level=logging.DEBUG,
     datefmt="%d/%m/%y %H:%M:%S",
-    format="%(asctime)s (%(filename)s) [%(levelname)s]: %(message)s"
+    format="%(asctime)s (%(filename)s) [%(levelname)s]: %(message)s",
 )
+
 
 def main():
     pass
 
 
-def get_day_timetable(auth_cookies, tassweb_url, date=None):    # Date is in YYYY-MM-DD format.
+def get_day_timetable(
+    auth_cookies, tassweb_url, date=None
+):  # Date is in YYYY-MM-DD format.
 
     logging.info(f"Using {tassweb_url} as the remote root.")
 
@@ -28,9 +31,7 @@ def get_day_timetable(auth_cookies, tassweb_url, date=None):    # Date is in YYY
         today = datetime.now()
 
         if is_weekend(today.year, today.month, today.day):
-            logging.info(
-                "It is a weekend. Either run the program on a non-weekend,"
-            )
+            logging.info("It is a weekend. Either run the program on a non-weekend,")
             logging.info("or specify a date.")
             logging.info("Exiting.")
             exit(1)
@@ -61,22 +62,24 @@ def get_day_timetable(auth_cookies, tassweb_url, date=None):    # Date is in YYY
         # print(site_data["HEADERLABEL"])
 
         df = pd.DataFrame(site_data["DATA"])
-        df = df.T.drop("sub_code", errors='ignore')
-        df = df.drop("room_code", errors='ignore')
-        df = df.drop("allDay", errors='ignore')
-        df = df.drop("currentperiod", errors='ignore')
-        df = df.drop("tch_code", errors='ignore')
-        df = df.drop("prd_code", errors='ignore')
-        df = df.drop("day_code", errors='ignore')
-        df = df.drop("start", errors='ignore')
-        df = df.drop("end", errors='ignore')
-        df = df.drop("id", errors='ignore')
-        df = df.drop("display_tch_name", errors='ignore')
-        df = df.drop("diplay_tch_code", errors='ignore')    # typo intentional, made on their backend
-        df = df.drop("year_grp_desc", errors='ignore')
-        df = df.drop("tt_id", errors='ignore')
-        df = df.drop("title", errors='ignore')
-        df = df.drop("description", errors='ignore')
+        df = df.T.drop("sub_code", errors="ignore")
+        df = df.drop("room_code", errors="ignore")
+        df = df.drop("allDay", errors="ignore")
+        df = df.drop("currentperiod", errors="ignore")
+        df = df.drop("tch_code", errors="ignore")
+        df = df.drop("prd_code", errors="ignore")
+        df = df.drop("day_code", errors="ignore")
+        df = df.drop("start", errors="ignore")
+        df = df.drop("end", errors="ignore")
+        df = df.drop("id", errors="ignore")
+        df = df.drop("display_tch_name", errors="ignore")
+        df = df.drop(
+            "diplay_tch_code", errors="ignore"
+        )  # typo intentional, made on their backend lol
+        df = df.drop("year_grp_desc", errors="ignore")
+        df = df.drop("tt_id", errors="ignore")
+        df = df.drop("title", errors="ignore")
+        df = df.drop("description", errors="ignore")
 
         try:
             df = df.reindex(
@@ -110,15 +113,19 @@ def get_day_timetable(auth_cookies, tassweb_url, date=None):    # Date is in YYY
         except IndexError:
             pass
 
-        df["Year Group"] = df["Year Group"].fillna(-1)
+        df["Year Group"] = df["Year Group"].infer_objects(copy=False).fillna(-1)
         df = df.fillna("")
         df["Year Group"] = df["Year Group"].astype(int)
         df["Year Group"] = df["Year Group"].replace(-1, "")
 
-        return df.to_html(index=False), tabulate(df, headers="keys")
+        return df
 
     else:
         logging.fatal(
+            "Failed to access timetable. Make sure your URL or authentication is correct."
+        )
+
+        raise requests.exceptions.RequestException(
             "Failed to access timetable. Make sure your URL or authentication is correct."
         )
         exit(1)
@@ -140,14 +147,28 @@ def is_weekend(year, month, day):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-                prog='login.py',
-                description='Direct interface, returns a text-mode timetable from a supplied TASSweb URL, username and password.')
+        prog="login.py",
+        description="Direct interface, returns a text-mode timetable from a supplied TASSweb URL, username and password.",
+    )
 
-    parser.add_argument('tassweb_url', help="TASSweb installation root URL")
-    parser.add_argument('username', help="TASSweb username")
-    parser.add_argument('password', help="TASSweb password")
-    parser.add_argument('--date', help="Optional date specified, in YYYY-MM-DD format", required=False)
+    parser.add_argument("tassweb_url", help="TASSweb installation root URL")
+    parser.add_argument("username", help="TASSweb username")
+    parser.add_argument("password", help="TASSweb password")
+    parser.add_argument(
+        "-d",
+        "--date",
+        help="Optional date specified, in YYYY-MM-DD format",
+        required=False,
+    )
 
     args = parser.parse_args()
 
-    print(get_day_timetable(login.get_auth_cookie(args.tassweb_url, args.username, args.password), args.tassweb_url)[1])
+    print(
+        tabulate(
+            get_day_timetable(
+                login.get_auth_cookie(args.tassweb_url, args.username, args.password),
+                args.tassweb_url,
+                args.date,
+            )
+        )
+    )
