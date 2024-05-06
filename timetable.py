@@ -137,7 +137,7 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
     else:
         specified_time = datetime.strptime(time, "%H:%M")
 
-    df = get_day_timetable(auth_cookies, tassweb_url, date)
+    df = get_day_timetable(auth_cookies, tassweb_url, date)[0]
 
     # Convert time columns to datetime objects with specified format
     df["Start"] = pd.to_datetime(df["Start"], format="%I:%M %p")
