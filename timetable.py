@@ -1,8 +1,7 @@
-import os
 import logging
 import requests
+import argparse
 from datetime import datetime
-from dotenv import load_dotenv
 from tabulate import tabulate
 import pandas as pd
 
@@ -12,10 +11,9 @@ import login
 def main():
     pass
 
-def get_day_timetable(auth_cookies, date=None):    # Date is in YYYY-MM-DD format.
-    load_dotenv()
 
-    tassweb_url = os.getenv("TASSWEB_REMOTE_URL")
+def get_day_timetable(auth_cookies, tassweb_url, date=None):    # Date is in YYYY-MM-DD format.
+
     logging.info(f"Using {tassweb_url} as the remote root.")
 
     # Send request to the protected URL
@@ -115,7 +113,7 @@ def get_day_timetable(auth_cookies, date=None):    # Date is in YYYY-MM-DD forma
 
     else:
         logging.fatal(
-            "Failed to access timetable. Make sure your URL is correct in the .env config file."
+            "Failed to access timetable. Make sure your URL or authentication is correct."
         )
         exit(1)
 
@@ -134,5 +132,16 @@ def is_weekend(year, month, day):
 
 
 if __name__ == "__main__":
-    results = get_day_timetable(login.get_auth_cookie())
-    print(results[1])
+
+    parser = argparse.ArgumentParser(
+                prog='login.py',
+                description='Direct interface, returns a text-mode timetable from a supplied TASSweb URL, username and password.')
+
+    parser.add_argument('tassweb_url', help="TASSweb installation root URL")
+    parser.add_argument('username', help="TASSweb username")
+    parser.add_argument('password', help="TASSweb password")
+    parser.add_argument('--date', help="Optional date specified, in YYYY-MM-DD format", required=False)
+
+    args = parser.parse_args()
+
+    print(get_day_timetable(login.get_auth_cookie(args.tassweb_url, args.username, args.password), args.tassweb_url)[1])

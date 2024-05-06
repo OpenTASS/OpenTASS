@@ -1,7 +1,6 @@
-import os
 import logging
 import requests
-from dotenv import load_dotenv
+import argparse
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -13,28 +12,23 @@ logging.basicConfig(
 def main():
     pass
 
-def get_auth_cookie():
-    load_dotenv()
+def get_auth_cookie(tassweb_url, username, password):
 
-    tassweb_url = os.getenv("TASSWEB_REMOTE_URL")
     logging.info(f"Using {tassweb_url} as the remote root.")
-
-    tassweb_username = os.getenv("TASSWEB_USERNAME")
-    tassweb_password = os.getenv("TASSWEB_PASSWORD")
 
     payload = {
         "intent": "save",
         "required": "username,password",
         "viewstate": "add",
-        "username": tassweb_username,
+        "username": username,
         "username_previous": "",
-        "password": tassweb_password,
+        "password": password,
     }
 
     params = {"do": "ui.web.user.loginAttempt"}
 
     logging.info(
-        f"""Authenticating using username {tassweb_username} and provided password."""
+        f"""Authenticating using username {username} and provided password."""
     )
     response = requests.post(
         tassweb_url + "/remote-json.cfm", data=payload, params=params
@@ -48,10 +42,20 @@ def get_auth_cookie():
 
     else:
         logging.fatal(
-            "Login failed. Make sure your URL is correct, in the .env config file."
+            "Login failed. Make sure your URL or login details are correct."
         )
         exit(1)
 
 
 if __name__ == "__main__":
-    logging.info(f"The authentication cookie from the server was: {get_auth_cookie()}")
+    parser = argparse.ArgumentParser(
+                    prog='login.py',
+                    description='Direct interface, returns a login cookie from a supplied TASSweb URL, username and password.')
+
+    parser.add_argument('tassweb_url', help="TASSweb installation root URL")
+    parser.add_argument('username', help="TASSweb username")
+    parser.add_argument('password', help="TASSweb password")
+
+    args = parser.parse_args()
+
+    logging.info(f"The authentication cookie from the server was: {get_auth_cookie(args.tassweb_url, args.username, args.password)}")
