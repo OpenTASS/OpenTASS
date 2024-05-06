@@ -5,7 +5,7 @@ import argparse
 logging.basicConfig(
     level=logging.DEBUG,
     datefmt="%d/%m/%y %H:%M:%S",
-    format="%(asctime)s [%(levelname)s]: %(message)s",
+    format="%(asctime)s (%(filename)s) [%(levelname)s]: %(message)s"
 )
 
 
