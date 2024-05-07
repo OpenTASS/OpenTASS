@@ -133,7 +133,7 @@ def get_day_timetable(
 
 def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
     if time is None:
-        specified_time = datetime.now()
+        specified_time = datetime.now().replace(year=1900, month=1, day=1)
     else:
         specified_time = datetime.strptime(time, "%H:%M")
 
@@ -148,12 +148,17 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
         start_time = row["Start"]
         end_time = row["End"]
 
+        logging.debug(
+            f"Start: {start_time} and time now: {specified_time} and end: {end_time}"
+        )
+
         # Check if current time is within this period
         if start_time <= specified_time <= end_time:
             break
+            period = row
     else:
-        row = "No period is currently in progress."
-    return row
+        period = "No period is currently in progress."
+    return period
 
 
 def is_weekend(year, month, day):
@@ -195,6 +200,6 @@ if __name__ == "__main__":
                 args.tassweb_url,
                 args.date,
             ),
-            headers='keys'
+            headers="keys",
         )
     )
