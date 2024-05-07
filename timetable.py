@@ -199,7 +199,7 @@ if __name__ == "__main__":
                 login.get_auth_cookie(args.tassweb_url, args.username, args.password),
                 args.tassweb_url,
                 args.date,
-            ),
+            )[0],
             headers="keys",
         )
     )
