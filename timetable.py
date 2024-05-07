@@ -154,8 +154,8 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
 
         # Check if current time is within this period
         if start_time <= specified_time <= end_time:
-            break
             period = row
+            break
     else:
         period = "No period is currently in progress."
     return period
