@@ -118,7 +118,7 @@ def get_day_timetable(
         df["Year Group"] = df["Year Group"].astype(int)
         df["Year Group"] = df["Year Group"].replace(-1, "")
 
-        return df, df.to_html(index=False)
+        return df, df.to_html(index=False), site_data["HEADERLABEL"]
 
     else:
         logging.fatal(
@@ -143,6 +143,8 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
     df["Start"] = pd.to_datetime(df["Start"], format="%I:%M %p").dt.time
     df["End"] = pd.to_datetime(df["End"], format="%I:%M %p").dt.time
 
+    if date is None:
+        date = datetime.today().strftime('%Y-%m-%d')
 
     # Loop through each row in the DataFrame
     for index, row in df.iterrows():
@@ -196,13 +198,29 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print(
-        tabulate(
-            get_day_timetable(
-                login.get_auth_cookie(args.tassweb_url, args.username, args.password),
+    auth_cookie = login.get_auth_cookie(args.tassweb_url, args.username, args.password)
+
+    timetable = get_day_timetable(
+                auth_cookie,
                 args.tassweb_url,
                 args.date,
-            )[0],
-            headers="keys",
+            )
+    current = get_current_class(
+                auth_cookie,
+                args.tassweb_url
+            )
+
+    print()
+    print(timetable[2])
+    print()
+
+    print(
+        tabulate(
+            timetable[0],
+            headers="keys"
         )
     )
+
+    print()
+    print(f"Current Class ({current[0]}, {datetime.now().time().strftime('%H:%M:%S')}):")
+    print(f"In {current[1]}, from {current[2]} to {current[3]}, you have {current[4]} with the class {current[5]} and year group {current[6]} with teacher {current[7]} in room {current[8]}")
