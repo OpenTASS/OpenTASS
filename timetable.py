@@ -109,7 +109,7 @@ def get_day_timetable(
         df["Year Group"] = df["Year Group"].astype(int)
         df["Year Group"] = df["Year Group"].replace(-1, "")
 
-        return df, df.to_html(index=False), site_data["HEADERLABEL"]
+        return df, df.to_html(index=False), site_data["HEADERLABEL"], site_data
 
     else:
         logging.fatal(
