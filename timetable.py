@@ -27,15 +27,6 @@ def get_day_timetable(
 
     # Send request to the protected URL
     if date is None:
-
-        today = datetime.now()
-
-        if is_weekend(today.year, today.month, today.day):
-            logging.info("It is a weekend. Either run the program on a non-weekend,")
-            logging.info("or specify a date.")
-            logging.info("Exiting.")
-            exit(1)
-
         payload = {}
 
     else:
@@ -135,7 +126,8 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
     if time is None:
         specified_time = datetime.now().time()
     else:
-        specified_time = datetime.time().strptime(time, "%H:%M")
+        specified_time = datetime.today().strptime(time, "%H:%M")
+        specified_time = specified_time.time()
 
     df = get_day_timetable(auth_cookies, tassweb_url, date)[0]
 
@@ -158,7 +150,18 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
         # Check if current time is within this period
         if start_time <= specified_time <= end_time:
 
-            period = date, row["Period"], row["Start"], row["End"], row["Subject"], row["Class"], row["Year Group"], row["Teacher"], row["Room"]
+            period = (
+                date,
+                row["Period"],
+                row["Start"],
+                row["End"],
+                row["Subject"],
+                row["Class"],
+                row["Year Group"],
+                row["Teacher"],
+                row["Room"],
+            )
+
             break
     else:
         period = None
@@ -166,17 +169,51 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
     return period
 
 
-def is_weekend(year, month, day):
+def get_next_class(auth_cookies, tassweb_url, date=None, time=None):
 
-    # Create datetime object for the input date
-    given_date = datetime(year, month, day)
-    day_of_week = given_date.isoweekday()
-
-    # Return if it is a weekday or a weekend
-    if day_of_week < 5:
-        return False
+    if time is None:
+        specified_time = datetime.now().time()
     else:
-        return True
+        specified_time = datetime.today().strptime(time, "%H:%M")
+        specified_time = specified_time.time()
+
+    df = get_day_timetable(auth_cookies, tassweb_url, date)[0]
+
+    # Convert time columns to datetime objects with specified format
+    df["Start"] = pd.to_datetime(df["Start"], format="%I:%M %p").dt.time
+    df["End"] = pd.to_datetime(df["End"], format="%I:%M %p").dt.time
+
+    if date is None:
+        date = datetime.today().strftime('%Y-%m-%d')
+
+    # Loop through each row in the DataFrame
+    for index, row in df.iterrows():
+        start_time = row["Start"]
+        end_time = row["End"]
+
+        logging.debug(
+            f"Start: {start_time} and time now: {specified_time} and end: {end_time}"
+        )
+
+        # Check if current time is within this period
+        if start_time <= specified_time <= end_time:
+
+            period = (
+                date,
+                df.loc[index+1]["Period"],
+                df.loc[index+1]["Start"],
+                df.loc[index+1]["End"],
+                df.loc[index+1]["Subject"],
+                df.loc[index+1]["Class"],
+                df.loc[index+1]["Year Group"],
+                df.loc[index+1]["Teacher"],
+                df.loc[index+1]["Room"]
+            )
+            break
+    else:
+        period = None
+
+    return period
 
 
 if __name__ == "__main__":
@@ -195,6 +232,12 @@ if __name__ == "__main__":
         help="Optional date specified, in YYYY-MM-DD format",
         required=False,
     )
+    parser.add_argument(
+        "-t",
+        "--time",
+        help="Optional time specified, in HH:MM (24h) format",
+        required=False,
+    )
 
     args = parser.parse_args()
 
@@ -207,7 +250,15 @@ if __name__ == "__main__":
             )
     current = get_current_class(
                 auth_cookie,
-                args.tassweb_url
+                args.tassweb_url,
+                args.date,
+                args.time
+            )
+    next = get_next_class(
+                auth_cookie,
+                args.tassweb_url,
+                args.date,
+                args.time
             )
 
     print()
@@ -221,15 +272,40 @@ if __name__ == "__main__":
         )
     )
 
-    print()
-    print(f"Current Class ({current[0]}, {datetime.now().time().strftime('%H:%M:%S')}):")
+    if args.time is None:
+        args.time = datetime.now().time().strftime('%H:%M:%S')
 
     if current is None:
+        print()
         print("No period is currently in progress.")
+        if next is None:
+            print()
+            print("No period is next up.")
         exit(0)
+
+    print()
+    print(f"Current Class ({current[0]}, {args.time}):")
 
     if current[4] == '' and current[5] == '' and current[6] == '' and current[7] == '' and current[8] == '':
         print(f"In {current[1]}, from {current[2]} to {current[3]}, you have no class.")
 
     else:
-        print(f"In {current[1]}, from {current[2]} to {current[3]}, you have {current[4]} with the class {current[5]} and year group {current[6]} with teacher {current[7]} in room {current[8]}")
+        print(
+            f"In {current[1]}, from {current[2]} to {current[3]}, you have {current[4]} with the class {current[5]} and year group {current[6]} with teacher {current[7]} in room {current[8]}."
+        )
+
+    if next is None:
+        print()
+        print("No period is next up.")
+        exit(0)
+
+    print()
+    print(f"Next Class ({next[0]}, {args.time}):")
+
+    if next[4] == '' and next[5] == '' and next[6] == '' and next[7] == '' and next[8] == '':
+        print(f"In {next[1]}, from {next[2]} to {next[3]}, you have no class.")
+
+    else:
+        print(
+            f"In {next[1]}, from {next[2]} to {next[3]}, you have {next[4]} with the class {next[5]} and year group {next[6]} with teacher {next[7]} in room {next[8]}."
+        )
