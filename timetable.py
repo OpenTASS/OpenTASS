@@ -223,4 +223,13 @@ if __name__ == "__main__":
 
     print()
     print(f"Current Class ({current[0]}, {datetime.now().time().strftime('%H:%M:%S')}):")
-    print(f"In {current[1]}, from {current[2]} to {current[3]}, you have {current[4]} with the class {current[5]} and year group {current[6]} with teacher {current[7]} in room {current[8]}")
+
+    if current is None:
+        print("No period is currently in progress.")
+        exit(0)
+
+    if current[4] == '' and current[5] == '' and current[6] == '' and current[7] == '' and current[8] == '':
+        print(f"In {current[1]}, from {current[2]} to {current[3]}, you have no class.")
+
+    else:
+        print(f"In {current[1]}, from {current[2]} to {current[3]}, you have {current[4]} with the class {current[5]} and year group {current[6]} with teacher {current[7]} in room {current[8]}")
