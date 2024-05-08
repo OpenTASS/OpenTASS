@@ -133,15 +133,16 @@ def get_day_timetable(
 
 def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
     if time is None:
-        specified_time = datetime.now().replace(year=1900, month=1, day=1)
+        specified_time = datetime.now().time()
     else:
-        specified_time = datetime.strptime(time, "%H:%M")
+        specified_time = datetime.time().strptime(time, "%H:%M")
 
     df = get_day_timetable(auth_cookies, tassweb_url, date)[0]
 
     # Convert time columns to datetime objects with specified format
-    df["Start"] = pd.to_datetime(df["Start"], format="%I:%M %p")
-    df["End"] = pd.to_datetime(df["End"], format="%I:%M %p")
+    df["Start"] = pd.to_datetime(df["Start"], format="%I:%M %p").dt.time
+    df["End"] = pd.to_datetime(df["End"], format="%I:%M %p").dt.time
+
 
     # Loop through each row in the DataFrame
     for index, row in df.iterrows():
@@ -155,7 +156,7 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
         # Check if current time is within this period
         if start_time <= specified_time <= end_time:
 
-            period = row["Period"], row["Start"], row["End"], row["Subject"], row["Class"], row["Year Group"], row["Teacher"], row["Room"]
+            period = date, row["Period"], row["Start"], row["End"], row["Subject"], row["Class"], row["Year Group"], row["Teacher"], row["Room"]
             break
     else:
         period = None
