@@ -144,7 +144,7 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
     df["End"] = pd.to_datetime(df["End"], format="%I:%M %p").dt.time
 
     if date is None:
-        date = datetime.today().strftime("%Y-%m-%d")
+        date = datetime.today().strftime('%Y-%m-%d')
 
     # Loop through each row in the DataFrame
     for index, row in df.iterrows():
@@ -158,17 +158,7 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
         # Check if current time is within this period
         if start_time <= specified_time <= end_time:
 
-            period = (
-                date,
-                row["Period"],
-                row["Start"],
-                row["End"],
-                row["Subject"],
-                row["Class"],
-                row["Year Group"],
-                row["Teacher"],
-                row["Room"],
-            )
+            period = date, row["Period"], row["Start"], row["End"], row["Subject"], row["Class"], row["Year Group"], row["Teacher"], row["Room"]
             break
     else:
         period = None
@@ -211,38 +201,35 @@ if __name__ == "__main__":
     auth_cookie = login.get_auth_cookie(args.tassweb_url, args.username, args.password)
 
     timetable = get_day_timetable(
-        auth_cookie,
-        args.tassweb_url,
-        args.date,
-    )
-    current = get_current_class(auth_cookie, args.tassweb_url)
+                auth_cookie,
+                args.tassweb_url,
+                args.date,
+            )
+    current = get_current_class(
+                auth_cookie,
+                args.tassweb_url
+            )
 
     print()
     print(timetable[2])
     print()
 
-    print(tabulate(timetable[0], headers="keys"))
+    print(
+        tabulate(
+            timetable[0],
+            headers="keys"
+        )
+    )
 
     print()
-    print(
-        f"Current Class ({current[0]}, {datetime.now().time().strftime('%H:%M:%S')}):"
-    )
+    print(f"Current Class ({current[0]}, {datetime.now().time().strftime('%H:%M:%S')}):")
 
     if current is None:
         print("No period is currently in progress.")
         exit(0)
 
-    if (
-        current[4] == ""
-        and current[5] == ""
-        and current[6] == ""
-        and current[7] == ""
-        and current[8] == ""
-    ):
+    if current[4] == '' and current[5] == '' and current[6] == '' and current[7] == '' and current[8] == '':
         print(f"In {current[1]}, from {current[2]} to {current[3]}, you have no class.")
 
     else:
-        print(
-            f"In {current[1]}, from {current[2]} to {current[3]}, you have {current[4]} with the class {current[5]} and year"
-            " group {current[6]} with teacher {current[7]} in room {current[8]}"
-        )
+        print(f"In {current[1]}, from {current[2]} to {current[3]}, you have {current[4]} with the class {current[5]} and year group {current[6]} with teacher {current[7]} in room {current[8]}")
