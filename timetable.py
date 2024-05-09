@@ -169,7 +169,7 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
     return period
 
 
-def get_next_class(auth_cookies, tassweb_url, date=None, time=None):
+def get_next_class(auth_cookies, tassweb_url, date=None, time=None, offset=0):
 
     if time is None:
         specified_time = datetime.now().time()
@@ -198,7 +198,7 @@ def get_next_class(auth_cookies, tassweb_url, date=None, time=None):
         # Check if current time is within this period
         if start_time <= specified_time <= end_time:
 
-            next_index = index + 1
+            next_index = index + 1 + offset
 
             if next_index >= len(df.index) - 1:
                 return None
