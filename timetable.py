@@ -8,13 +8,6 @@ import pandas as pd
 import login
 
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    datefmt="%d/%m/%y %H:%M:%S",
-    format="%(asctime)s (%(filename)s) [%(levelname)s]: %(message)s",
-)
-
-
 def main():
     pass
 
@@ -230,6 +223,12 @@ def get_next_class(auth_cookies, tassweb_url, date=None, time=None, offset=0, ex
 
 
 if __name__ == "__main__":
+
+    logging.basicConfig(
+        level=logging.WARN,
+        datefmt="%d/%m/%y %H:%M:%S",
+        format="%(asctime)s (%(filename)s) [%(levelname)s]: %(message)s",
+    )
 
     parser = argparse.ArgumentParser(
         prog="login.py",

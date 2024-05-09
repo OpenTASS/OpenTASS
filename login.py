@@ -2,12 +2,6 @@ import logging
 import requests
 import argparse
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    datefmt="%d/%m/%y %H:%M:%S",
-    format="%(asctime)s (%(filename)s) [%(levelname)s]: %(message)s",
-)
-
 
 def main():
     pass
@@ -45,6 +39,13 @@ def get_auth_cookie(tassweb_url, username, password):
 
 
 if __name__ == "__main__":
+
+    logging.basicConfig(
+        level=logging.WARN,
+        datefmt="%d/%m/%y %H:%M:%S",
+        format="%(asctime)s (%(filename)s) [%(levelname)s]: %(message)s",
+    )
+
     parser = argparse.ArgumentParser(
         prog="login.py",
         description="Direct interface, returns a login cookie from a supplied TASSweb URL, username and password.",
