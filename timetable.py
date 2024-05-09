@@ -198,16 +198,27 @@ def get_next_class(auth_cookies, tassweb_url, date=None, time=None):
         # Check if current time is within this period
         if start_time <= specified_time <= end_time:
 
+            next_index = index + 1
+
+            if next_index >= len(df.index) - 1:
+                return None
+
+            while df.loc[next_index]["Subject"] == '' and df.loc[next_index]["Class"] == '' and df.loc[next_index]["Year Group"] == '' and df.loc[next_index]["Teacher"] == '' and df.loc[next_index]["Room"] == '':
+                print(next_index)
+                if next_index == len(df.index) - 1:
+                    break
+                next_index = next_index + 1
+
             period = (
                 date,
-                df.loc[index+1]["Period"],
-                df.loc[index+1]["Start"],
-                df.loc[index+1]["End"],
-                df.loc[index+1]["Subject"],
-                df.loc[index+1]["Class"],
-                df.loc[index+1]["Year Group"],
-                df.loc[index+1]["Teacher"],
-                df.loc[index+1]["Room"]
+                df.loc[next_index]["Period"],
+                df.loc[next_index]["Start"],
+                df.loc[next_index]["End"],
+                df.loc[next_index]["Subject"],
+                df.loc[next_index]["Class"],
+                df.loc[next_index]["Year Group"],
+                df.loc[next_index]["Teacher"],
+                df.loc[next_index]["Room"]
             )
             break
     else:
