@@ -47,10 +47,6 @@ def get_day_timetable(
     if protected_response.ok:
         logging.info("Successfully accessed timetable. Extracting info...")
         site_data = protected_response.json()
-        debug_file = open("debug_data.py", "w")
-        debug_file.write(str(site_data))
-        debug_file.close()
-        # print(site_data["HEADERLABEL"])
 
         df = pd.DataFrame(site_data["DATA"])
         df = df.T.drop("sub_code", errors="ignore")
@@ -122,14 +118,17 @@ def get_day_timetable(
         exit(1)
 
 
-def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
+def get_current_class(auth_cookies, tassweb_url, date=None, time=None, existing_df=None):
     if time is None:
         specified_time = datetime.now().time()
     else:
         specified_time = datetime.today().strptime(time, "%H:%M")
         specified_time = specified_time.time()
 
-    df = get_day_timetable(auth_cookies, tassweb_url, date)[0]
+    if existing_df is None:
+        df = get_day_timetable(auth_cookies, tassweb_url, date)[0]
+    else:
+        df = existing_df
 
     # Convert time columns to datetime objects with specified format
     df["Start"] = pd.to_datetime(df["Start"], format="%I:%M %p").dt.time
@@ -169,7 +168,7 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None):
     return period
 
 
-def get_next_class(auth_cookies, tassweb_url, date=None, time=None, offset=0):
+def get_next_class(auth_cookies, tassweb_url, date=None, time=None, offset=0, existing_df=None):
 
     if time is None:
         specified_time = datetime.now().time()
@@ -177,7 +176,10 @@ def get_next_class(auth_cookies, tassweb_url, date=None, time=None, offset=0):
         specified_time = datetime.today().strptime(time, "%H:%M")
         specified_time = specified_time.time()
 
-    df = get_day_timetable(auth_cookies, tassweb_url, date)[0]
+    if existing_df is None:
+        df = get_day_timetable(auth_cookies, tassweb_url, date)[0]
+    else:
+        df = existing_df
 
     # Convert time columns to datetime objects with specified format
     df["Start"] = pd.to_datetime(df["Start"], format="%I:%M %p").dt.time
