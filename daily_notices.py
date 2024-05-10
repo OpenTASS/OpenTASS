@@ -19,9 +19,7 @@ def get_daily_notices(
 
     # Send request to the protected URL
     if date is None:
-        payload = {
-            "start": datetime.today().strftime('%Y-%m-%d')
-        }
+        payload = {"start": datetime.today().strftime("%Y-%m-%d")}
 
     else:
 
@@ -74,7 +72,7 @@ def get_daily_notices(
                 "entry_name",
                 "room_desc",
                 "location",
-                "url_link"
+                "url_link",
             ]
         )
     except IndexError:
@@ -91,7 +89,7 @@ def get_daily_notices(
                 "entry_name": "Name",
                 "room_desc": "Room",
                 "location": "Location",
-                "url_link": "URL"
+                "url_link": "URL",
             }
         )
     except IndexError:
@@ -125,7 +123,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    daily_notices = get_daily_notices(login.get_auth_cookie(args.tassweb_url, args.username, args.password), args.tassweb_url, args.date)
+    daily_notices = get_daily_notices(
+        login.get_auth_cookie(args.tassweb_url, args.username, args.password),
+        args.tassweb_url,
+        args.date,
+    )
 
     print()
     print(daily_notices[2])
