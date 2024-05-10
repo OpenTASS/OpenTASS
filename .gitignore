@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Ignore python build dist
+dist/
+
 # Ignore env files (not the default) 
 .env
 
