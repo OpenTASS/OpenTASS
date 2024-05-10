@@ -35,7 +35,11 @@ def get_auth_cookie(tassweb_url, username, password):
 
     else:
         logging.fatal("Login failed. Make sure your URL or login details are correct.")
-        exit(1)
+
+        raise requests.exceptions.RequestException(
+            "Failed to access timetable. Make sure your URL or authentication is correct."
+        )
+        return None
 
 
 if __name__ == "__main__":

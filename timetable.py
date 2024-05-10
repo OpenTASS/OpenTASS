@@ -108,7 +108,7 @@ def get_day_timetable(
         raise requests.exceptions.RequestException(
             "Failed to access timetable. Make sure your URL or authentication is correct."
         )
-        exit(1)
+        return None
 
 
 def get_current_class(
@@ -230,46 +230,6 @@ def get_next_class(
         period = None
 
     return period
-
-
-def get_raw_timetable_json(
-    auth_cookies, tassweb_url, date=None
-):  # Date is in YYYY-MM-DD format.)
-    logging.info(f"Using {tassweb_url} as the remote root.")
-
-    # Send request to the protected URL
-    if date is None:
-        payload = {}
-
-    else:
-
-        payload = {
-            "start": date,
-        }
-
-    params = {"do": "studentportal.timetable.main.todaysTimetable.grid"}
-
-    protected_response = requests.post(
-        tassweb_url + "/remote-json.cfm",
-        data=payload,
-        params=params,
-        cookies=auth_cookies,
-    )
-
-    if protected_response.ok:
-        logging.info("Successfully accessed timetable. Extracting info...")
-        site_data = protected_response.json()
-        return site_data
-
-    else:
-        logging.fatal(
-            "Failed to access timetable. Make sure your URL or authentication is correct."
-        )
-
-        raise requests.exceptions.RequestException(
-            "Failed to access timetable. Make sure your URL or authentication is correct."
-        )
-        exit(1)
 
 
 if __name__ == "__main__":
