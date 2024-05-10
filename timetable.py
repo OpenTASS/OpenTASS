@@ -111,7 +111,9 @@ def get_day_timetable(
         exit(1)
 
 
-def get_current_class(auth_cookies, tassweb_url, date=None, time=None, existing_df=None):
+def get_current_class(
+    auth_cookies, tassweb_url, date=None, time=None, existing_df=None
+):
     if time is None:
         specified_time = datetime.now().time()
     else:
@@ -128,7 +130,7 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None, existing_
     df["End"] = pd.to_datetime(df["End"], format="%I:%M %p").dt.time
 
     if date is None:
-        date = datetime.today().strftime('%Y-%m-%d')
+        date = datetime.today().strftime("%Y-%m-%d")
 
     # Loop through each row in the DataFrame
     for index, row in df.iterrows():
@@ -161,7 +163,9 @@ def get_current_class(auth_cookies, tassweb_url, date=None, time=None, existing_
     return period
 
 
-def get_next_class(auth_cookies, tassweb_url, date=None, time=None, offset=0, existing_df=None):
+def get_next_class(
+    auth_cookies, tassweb_url, date=None, time=None, offset=0, existing_df=None
+):
 
     if time is None:
         specified_time = datetime.now().time()
@@ -179,7 +183,7 @@ def get_next_class(auth_cookies, tassweb_url, date=None, time=None, offset=0, ex
     df["End"] = pd.to_datetime(df["End"], format="%I:%M %p").dt.time
 
     if date is None:
-        date = datetime.today().strftime('%Y-%m-%d')
+        date = datetime.today().strftime("%Y-%m-%d")
 
     # Loop through each row in the DataFrame
     for index, row in df.iterrows():
@@ -198,7 +202,13 @@ def get_next_class(auth_cookies, tassweb_url, date=None, time=None, offset=0, ex
             if next_index >= len(df.index) - 1:
                 return None
 
-            while df.loc[next_index]["Subject"] == '' and df.loc[next_index]["Class"] == '' and df.loc[next_index]["Year Group"] == '' and df.loc[next_index]["Teacher"] == '' and df.loc[next_index]["Room"] == '':
+            while (
+                df.loc[next_index]["Subject"] == ""
+                and df.loc[next_index]["Class"] == ""
+                and df.loc[next_index]["Year Group"] == ""
+                and df.loc[next_index]["Teacher"] == ""
+                and df.loc[next_index]["Room"] == ""
+            ):
                 print(next_index)
                 if next_index == len(df.index) - 1:
                     break
@@ -213,13 +223,53 @@ def get_next_class(auth_cookies, tassweb_url, date=None, time=None, offset=0, ex
                 df.loc[next_index]["Class"],
                 df.loc[next_index]["Year Group"],
                 df.loc[next_index]["Teacher"],
-                df.loc[next_index]["Room"]
+                df.loc[next_index]["Room"],
             )
             break
     else:
         period = None
 
     return period
+
+
+def get_raw_timetable_json(
+    auth_cookies, tassweb_url, date=None
+):  # Date is in YYYY-MM-DD format.)
+    logging.info(f"Using {tassweb_url} as the remote root.")
+
+    # Send request to the protected URL
+    if date is None:
+        payload = {}
+
+    else:
+
+        payload = {
+            "start": date,
+        }
+
+    params = {"do": "studentportal.timetable.main.todaysTimetable.grid"}
+
+    protected_response = requests.post(
+        tassweb_url + "/remote-json.cfm",
+        data=payload,
+        params=params,
+        cookies=auth_cookies,
+    )
+
+    if protected_response.ok:
+        logging.info("Successfully accessed timetable. Extracting info...")
+        site_data = protected_response.json()
+        return site_data
+
+    else:
+        logging.fatal(
+            "Failed to access timetable. Make sure your URL or authentication is correct."
+        )
+
+        raise requests.exceptions.RequestException(
+            "Failed to access timetable. Make sure your URL or authentication is correct."
+        )
+        exit(1)
 
 
 if __name__ == "__main__":
@@ -256,36 +306,21 @@ if __name__ == "__main__":
     auth_cookie = login.get_auth_cookie(args.tassweb_url, args.username, args.password)
 
     timetable = get_day_timetable(
-                auth_cookie,
-                args.tassweb_url,
-                args.date,
-            )
-    current = get_current_class(
-                auth_cookie,
-                args.tassweb_url,
-                args.date,
-                args.time
-            )
-    next = get_next_class(
-                auth_cookie,
-                args.tassweb_url,
-                args.date,
-                args.time
-            )
+        auth_cookie,
+        args.tassweb_url,
+        args.date,
+    )
+    current = get_current_class(auth_cookie, args.tassweb_url, args.date, args.time)
+    next = get_next_class(auth_cookie, args.tassweb_url, args.date, args.time)
 
     print()
     print(timetable[2])
     print()
 
-    print(
-        tabulate(
-            timetable[0],
-            headers="keys"
-        )
-    )
+    print(tabulate(timetable[0], headers="keys"))
 
     if args.time is None:
-        args.time = datetime.now().time().strftime('%H:%M:%S')
+        args.time = datetime.now().time().strftime("%H:%M:%S")
 
     if current is None:
         print()
@@ -298,12 +333,19 @@ if __name__ == "__main__":
     print()
     print(f"Current Class ({current[0]}, {args.time}):")
 
-    if current[4] == '' and current[5] == '' and current[6] == '' and current[7] == '' and current[8] == '':
+    if (
+        current[4] == ""
+        and current[5] == ""
+        and current[6] == ""
+        and current[7] == ""
+        and current[8] == ""
+    ):
         print(f"In {current[1]}, from {current[2]} to {current[3]}, you have no class.")
 
     else:
         print(
-            f"In {current[1]}, from {current[2]} to {current[3]}, you have {current[4]} with the class {current[5]} and year group {current[6]} with teacher {current[7]} in room {current[8]}."
+            f"In {current[1]}, from {current[2]} to {current[3]}, you have {current[4]} with the class {current[5]} and year"
+            f" group {current[6]} with teacher {current[7]} in room {current[8]}."
         )
 
     if next is None:
@@ -314,10 +356,17 @@ if __name__ == "__main__":
     print()
     print(f"Next Class ({next[0]}, {args.time}):")
 
-    if next[4] == '' and next[5] == '' and next[6] == '' and next[7] == '' and next[8] == '':
+    if (
+        next[4] == ""
+        and next[5] == ""
+        and next[6] == ""
+        and next[7] == ""
+        and next[8] == ""
+    ):
         print(f"In {next[1]}, from {next[2]} to {next[3]}, you have no class.")
 
     else:
         print(
-            f"In {next[1]}, from {next[2]} to {next[3]}, you have {next[4]} with the class {next[5]} and year group {next[6]} with teacher {next[7]} in room {next[8]}."
+            f"In {next[1]}, from {next[2]} to {next[3]}, you have {next[4]} with the class {next[5]} and year group "
+            f"{next[6]} with teacher {next[7]} in room {next[8]}.",
         )
