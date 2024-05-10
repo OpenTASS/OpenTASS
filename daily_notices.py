@@ -99,6 +99,7 @@ def get_daily_notices(
 
     return df, df.to_html(index=False), site_data["headerlabel"], site_data
 
+
 if __name__ == "__main__":
 
     logging.basicConfig(
