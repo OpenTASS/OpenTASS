@@ -108,7 +108,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         prog="daily_notices.py",
-        description="Direct interface, returns a notice list cookie from a supplied TASSweb URL, username and password.",
+        description="Direct interface, returns a notice list from a supplied TASSweb URL, username and password.",
     )
 
     parser.add_argument("tassweb_url", help="TASSweb installation root URL")
