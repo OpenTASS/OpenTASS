@@ -40,20 +40,37 @@ def list_academic_reports(auth_cookies, tassweb_url):
 
     df = df.T
 
-    df['id'] = (tassweb_url + '/inline-file.cfm?do=studentportal.classes.main.myAcademicReports.file&id=' + df['id'])
-
     try:
         df = df.rename(
             columns={
                 "PRD_DESC": "Year / Period",
                 "SAR_DESC": "Description",
-                "id": "URL",
+                "id": "ID",
             }
         )
     except IndexError:
         pass
 
     return df, df.to_html(index=False), site_data
+
+
+def dl_report(auth_cookies, tassweb_url, id):
+
+    logging.info(f"Using {tassweb_url} as the remote root.")
+
+    params = {"do": "studentportal.classes.main.myAcademicReports.file",
+      "id": id
+    }
+
+    protected_response = requests.post(
+        tassweb_url + "/inline-file.cfm",
+        params=params,
+        cookies=auth_cookies,
+    )
+
+    site_data = protected_response.content
+    
+    return site_data
 
 
 if __name__ == "__main__":
@@ -74,11 +91,19 @@ if __name__ == "__main__":
     parser.add_argument("password", help="TASSweb password")
 
     args = parser.parse_args()
+    
+    auth_cookies = login.get_auth_cookie(args.tassweb_url, args.username, args.password)
 
     academic_reports = list_academic_reports(
-        login.get_auth_cookie(args.tassweb_url, args.username, args.password),
+        auth_cookies,
         args.tassweb_url
     )
+    
+    report_id = academic_reports[0]["ID"].iloc[0]
 
     print()
     print(tabulate(academic_reports[0], headers='keys'))
+    
+    pdf_file = open('academic.pdf', 'wb')
+    pdf_file.write(dl_report(auth_cookies, args.tassweb_url, report_id))
+    pdf_file.close()
