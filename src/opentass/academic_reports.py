@@ -58,10 +58,7 @@ def dl_report(auth_cookies, tassweb_url, id):
 
     logging.info(f"Using {tassweb_url} as the remote root.")
 
-    params = {
-        "do": "studentportal.classes.main.myAcademicReports.file",
-        "id": id
-    }
+    params = {"do": "studentportal.classes.main.myAcademicReports.file", "id": id}
 
     protected_response = requests.post(
         tassweb_url + "/inline-file.cfm",
@@ -95,16 +92,13 @@ if __name__ == "__main__":
 
     auth_cookies = login.get_auth_cookie(args.tassweb_url, args.username, args.password)
 
-    academic_reports = list_academic_reports(
-        auth_cookies,
-        args.tassweb_url
-    )
+    academic_reports = list_academic_reports(auth_cookies, args.tassweb_url)
 
     report_id = academic_reports[0]["ID"].iloc[0]
 
     print()
-    print(tabulate(academic_reports[0], headers='keys'))
+    print(tabulate(academic_reports[0], headers="keys"))
 
-    pdf_file = open('academic.pdf', 'wb')
+    pdf_file = open("academic.pdf", "wb")
     pdf_file.write(dl_report(auth_cookies, args.tassweb_url, report_id))
     pdf_file.close()

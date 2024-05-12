@@ -13,7 +13,9 @@ def main():
 
 
 # status is either tocomplete or completed
-def list_curricular_activities(auth_cookies, tassweb_url, status="", year=datetime.today().year):
+def list_curricular_activities(
+    auth_cookies, tassweb_url, status="", year=datetime.today().year
+):
 
     logging.info(f"Using {tassweb_url} as the remote root.")
 
@@ -21,7 +23,7 @@ def list_curricular_activities(auth_cookies, tassweb_url, status="", year=dateti
         "lmsclass": "all",
         "assignmentstatus": status,
         "assign_year": year,
-        "topicsubscribe": "activity.details,activity.onlinetest"    # don't know what this does
+        "topicsubscribe": "activity.details,activity.onlinetest",  # don't know what this does
     }
 
     params = {"do": "studentportal.activities.main.lmsactivities.grid"}
@@ -30,7 +32,7 @@ def list_curricular_activities(auth_cookies, tassweb_url, status="", year=dateti
         tassweb_url + "/remote-json.cfm",
         params=params,
         cookies=auth_cookies,
-        data=payload
+        data=payload,
     )
 
     site_data = protected_response.json()
@@ -71,7 +73,7 @@ def list_curricular_activities(auth_cookies, tassweb_url, status="", year=dateti
                 "DRAFT_DATE_DESC": "Draft Date",
                 "object_name": "Activity Name",
                 "DUE_DATE_DESC": "Due Date",
-                "OVERDUE_FLG": "Overdue?"
+                "OVERDUE_FLG": "Overdue?",
             }
         )
     except IndexError:
@@ -91,7 +93,7 @@ def list_curricular_activities(auth_cookies, tassweb_url, status="", year=dateti
                 "Overdue?",
                 "Extension?",
                 "Status",
-                "UUID"
+                "UUID",
             ]
         )
     except IndexError:
@@ -110,7 +112,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         prog="curricular_activities.py",
-        description="Direct interface, returns a curricular activities list from a supplied TASSweb URL, username and password.",
+        description="Direct interface, returns a curricular activities list from a supplied TASSweb URL, username and"
+        " password.",
     )
 
     parser.add_argument("tassweb_url", help="TASSweb installation root URL")
@@ -121,12 +124,9 @@ if __name__ == "__main__":
 
     auth_cookies = login.get_auth_cookie(args.tassweb_url, args.username, args.password)
 
-    curricular_activities = list_curricular_activities(
-        auth_cookies,
-        args.tassweb_url
-    )
+    curricular_activities = list_curricular_activities(auth_cookies, args.tassweb_url)
 
     activity_uuid = curricular_activities[0]["UUID"].iloc[0]
 
     print()
-    print(tabulate(curricular_activities[0], headers='keys'))
+    print(tabulate(curricular_activities[0], headers="keys"))
