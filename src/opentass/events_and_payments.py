@@ -20,7 +20,7 @@ def list_events(auth_cookies, tassweb_url):
 
     params = {"do": "studentportal.activities.main.myTours.grid"}
 
-    protected_response = requests.post(
+    protected_response = requests.get(
         tassweb_url + "/remote-json.cfm",
         params=params,
         cookies=auth_cookies,
@@ -131,6 +131,7 @@ def list_events(auth_cookies, tassweb_url):
     except IndexError:
         pass
 
+    df = df.fillna("")
     return df.T, df.to_html(index=False), site_data
 
 
