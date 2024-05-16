@@ -144,8 +144,8 @@ if __name__ == "__main__":
     )
 
     parser = argparse.ArgumentParser(
-        prog="curricular_activities.py",
-        description="Direct interface, returns a curricular activities list from a supplied TASSweb URL, username and"
+        prog="events_and_payments.py",
+        description="Direct interface, returns an events list from a supplied TASSweb URL, username and"
         " password.",
     )
 
