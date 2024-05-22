@@ -1,3 +1,13 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# OpenTASS is a Python library providing API access to The Alpha School System. #
+# Copyright (C) 2024 OpenTASS (capta1nt0ad and MrPiggy105)                      #
+#                                                                               #
+# OpenTASS is free software: you can redistribute it and/or modify              #
+# it under the terms of the GNU General Public License as published by          #
+# the Free Software Foundation, either version 3 of the License, or             #
+# (at your option) any later version.                                           #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
@@ -8,23 +18,16 @@ packages = ["src/opentass"]
 [project]
 name = "OpenTASS"
 version = "0.0.1"
-authors = [
-  { name="Capta1nT0ad" },
-  { name="MrPiggy105" }
-]
+authors = [{ name = "Capta1nT0ad" }, { name = "MrPiggy105" }]
 description = "OpenTASS is an in-development free-software front end for The Alpha School System."
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Operating System :: OS Independent",
 ]
-dependencies = [
-  "requests",
-  "tabulate",
-  "pandas"
-]
+dependencies = ["requests", "tabulate", "pandas"]
 
 [project.urls]
 Homepage = "https://github.com/OpenTASS/OpenTASS"
