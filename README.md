@@ -11,7 +11,7 @@ For the other projects of the OpenTASS Project, please see the [Directory](https
 ## Lisence
 
 OpenTASS is lisenced under the GNU General Public Lisence v3 or later.
-See the COPYING file for more information.
+See the [COPYING](COPYING) file for more information.
 
 ```
     OpenTASS is a Python library providing API access to The Alpha School System.
