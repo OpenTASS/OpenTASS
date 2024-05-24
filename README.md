@@ -6,11 +6,11 @@ The OpenTASS project also is developing accompanying GUI and CLI interfaces, as 
 
 While the aim of this repository is not to provide a direct user interface to use TASS, you can run any file such as `login.py` and `timetable.py` and it will accept arguments from the command line and will respond sanely. This is useful if you would like to get a hang of what kind of output this module provides to use in your application, and also useful for debug purposes.
 
-For the other projects of the OpenTASS Project, please see the [Directory](https://github.com/OpenTASS)
+For the other projects of the OpenTASS Project, please see the [Directory](https://github.com/OpenTASS).
 
-## Lisence
+### License
 
-OpenTASS is lisenced under the GNU General Public Lisence v3 or later.
+OpenTASS is licensed under the GNU General Public License v3 or later.
 See the [COPYING](COPYING) file for more information.
 
 ```
