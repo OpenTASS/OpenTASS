@@ -19,8 +19,6 @@ def absence_list(auth_cookies, tassweb_url, filter_acceptable=""):
 
     logging.info(f"Using {tassweb_url} as the remote root.")
 
-    # Couldn't find anything for the request payload. Maybe there's just nothing ¯\_(ツ)_/¯
-
     params = {"do": "studentportal.classes.main.myAttendance.grid"}
 
     payload = {
@@ -137,9 +135,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "-a",
         "--filter-acceptable",
-        help='Whether to filter by acceptable reasons, as "Y" or "N" (leave blank for all absences). Default = Y.',
+        help='Whether to filter if the reasons are acceptable, "Y" or "N" (for all absences, do not specify). Default = Y.',
         required=False,
-        default="",
+        default="Y",
     )
 
     args = parser.parse_args()
