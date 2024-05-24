@@ -100,6 +100,8 @@ def list_events(auth_cookies, tassweb_url):
                 "status_desc": "Event Status",
                 "stud_name": "Student Name",
                 "stud_med_ack_flg": "Medical Acknowledgement Given",
+                "link_url": "Link URL",
+                "id": "ID",
             }
         )
     except IndexError:
@@ -124,6 +126,8 @@ def list_events(auth_cookies, tassweb_url):
                 "Contact Phone",
                 "Year Group",
                 "Student Name",
+                "Link URL",
+                "ID",
             ]
         )
     except IndexError:
