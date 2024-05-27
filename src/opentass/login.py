@@ -63,6 +63,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    logging.info(
+    print(
         f"The authentication cookie from the server was: {get_auth_cookie(args.tassweb_url, args.username, args.password)}"
     )
