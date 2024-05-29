@@ -33,7 +33,6 @@ def list_events(auth_cookies, tassweb_url):
     # OK, there's a lot to filter out here, some of which is basically a duplicate of another column
     # If you need any use the raw json data or make a pull request if you think people will want it
 
-    df = df.T.drop("paid_flg", errors="ignore")
     df = df.drop("stud_ack_flg", errors="ignore")
     df = df.drop("table_id", errors="ignore")
     df = df.drop("pctut_grp", errors="ignore")
@@ -95,6 +94,7 @@ def list_events(auth_cookies, tassweb_url):
                 "tch_name": "Teacher Name",
                 "yr_grp": "Year Group",
                 "tour_desc": "Event",
+                "paid_flg": "Paid For",
                 "amount_paid": "Amount Paid",
                 "stud_status_desc": "Student Attendance Status",
                 "status_desc": "Event Status",
@@ -120,6 +120,7 @@ def list_events(auth_cookies, tassweb_url):
                 "Requires Medical Acknowledgement",
                 "Medical Acknowledgement Given",
                 "Student Attendence Status",
+                "Paid For",
                 "Amount Paid",
                 "Contact Name",
                 "Contact Email",
